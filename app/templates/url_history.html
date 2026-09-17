@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ monitored_url.url }} - PulseCheck</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body class="bg-light">
+    <main class="container py-5">
+      <a class="text-decoration-none" href="{{ url_for('main.dashboard') }}">&larr; Back to dashboard</a>
+
+      <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mt-3 mb-4">
+        <div>
+          <h1 class="h3 mb-1 text-break">{{ monitored_url.url }}</h1>
+          <a href="{{ monitored_url.url }}" target="_blank" rel="noopener noreferrer">Open monitored URL &nearr;</a>
+        </div>
+        <div class="text-md-end">
+          <span class="badge text-bg-{{ 'success' if status.state == 'up' else 'danger' if status.state == 'down' else 'secondary' }} fs-6">{{ status.state|upper }}</span>
+          <div class="text-secondary small mt-1">24h uptime: {{ status.uptime_percent ~ '%' if status.uptime_percent is not none else '?' }}</div>
+        </div>
+      </div>
+
+      <section class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <strong>Check history</strong>
+          <span class="text-secondary small">{{ checks|length }} recorded check{{ '' if checks|length == 1 else 's' }}</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Checked at (UTC)</th><th>Status</th><th>HTTP result / error</th><th>Response time</th></tr></thead>
+            <tbody>
+              {% for check in checks %}
+              <tr>
+                <td>{{ check.checked_at.isoformat() }}</td>
+                <td><span class="badge text-bg-{{ 'success' if check.is_up else 'danger' }}">{{ 'UP' if check.is_up else 'DOWN' }}</span></td>
+                <td>{% if check.status_code %}HTTP {{ check.status_code }}{% else %}{{ check.error_message or 'Request failed' }}{% endif %}</td>
+                <td>{{ check.response_time_ms ~ ' ms' if check.response_time_ms is not none else '?' }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="4" class="text-center text-secondary py-4">No checks have been recorded yet. Use Check now on the dashboard or wait for the scheduled run.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

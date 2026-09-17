@@ -6,6 +6,7 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://pulsecheck:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/pulsecheck
       SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      CHECK_INTERVAL_MINUTES: ${CHECK_INTERVAL_MINUTES:-5}
     depends_on:
       postgres:
         condition: service_healthy

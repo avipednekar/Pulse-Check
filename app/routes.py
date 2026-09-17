@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 
 from .checker import all_statuses, run_check, status_for_url
 from .extensions import db
-from .models import MonitoredUrl
+from .models import CheckResult, MonitoredUrl
 
 bp = Blueprint("main", __name__)
 
@@ -43,6 +43,19 @@ def dashboard():
 @bp.get("/api/status")
 def api_status():
     return jsonify(all_statuses())
+
+
+@bp.get("/urls/<int:url_id>")
+def url_history(url_id: int):
+    """Show the complete persisted check history for one monitored URL."""
+    monitored_url = db.get_or_404(MonitoredUrl, url_id)
+    checks = monitored_url.checks.order_by(CheckResult.checked_at.desc()).all()
+    return render_template(
+        "url_history.html",
+        monitored_url=monitored_url,
+        status=status_for_url(monitored_url),
+        checks=checks,
+    )
 
 
 @bp.post("/add-url")

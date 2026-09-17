@@ -15,6 +15,10 @@ rolling 24-hour uptime percentage.
 The application container applies the committed database migration before it starts.
 PostgreSQL data is kept in the named `postgres_data` Docker volume.
 
+The default scheduled interval is five minutes. To test locally, set
+`CHECK_INTERVAL_MINUTES=1` in `.env`, then recreate the app with
+`docker compose up -d --force-recreate app`.
+
 ## Local test run
 
 Create a virtual environment, install dependencies, then run:

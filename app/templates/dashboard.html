@@ -40,7 +40,10 @@
             <tbody>
               {% for item in statuses %}
               <tr>
-                <td class="text-break"><a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.url }}</a></td>
+                <td class="text-break">
+                  <a href="{{ url_for('main.url_history', url_id=item.id) }}">{{ item.url }}</a>
+                  <a class="small text-secondary ms-1" href="{{ item.url }}" target="_blank" rel="noopener noreferrer" aria-label="Open {{ item.url }}">&nearr;</a>
+                </td>
                 <td><span class="badge text-bg-{{ 'success' if item.state == 'up' else 'danger' if item.state == 'down' else 'secondary' }}">{{ item.state|upper }}</span></td>
                 <td>{% if item.status_code %}HTTP {{ item.status_code }}{% elif item.error_message %}{{ item.error_message }}{% else %}No checks yet{% endif %}</td>
                 <td>{{ item.response_time_ms ~ ' ms' if item.response_time_ms is not none else '—' }}</td>
