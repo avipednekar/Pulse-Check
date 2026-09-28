@@ -23,14 +23,17 @@ def run_check(monitored_url: MonitoredUrl) -> CheckResult:
     started_at = time.perf_counter()
 
     try:
-        response = requests.get(
+        timeout_sec = current_app.config["CHECK_TIMEOUT_SECONDS"]
+        # Use a tuple for (connect_timeout, read_timeout) and stream=True to avoid downloading large bodies
+        with requests.get(
             monitored_url.url,
-            timeout=current_app.config["CHECK_TIMEOUT_SECONDS"],
+            timeout=(3.0, timeout_sec),
             headers={"User-Agent": USER_AGENT},
-        )
-        status_code = response.status_code
-        response_time_ms = round((time.perf_counter() - started_at) * 1000)
-        is_up = 200 <= status_code < 400
+            stream=True
+        ) as response:
+            status_code = response.status_code
+            response_time_ms = round((time.perf_counter() - started_at) * 1000)
+            is_up = 200 <= status_code < 400
     except requests.RequestException as exc:
         response_time_ms = round((time.perf_counter() - started_at) * 1000)
         error_message = str(exc)[:500]

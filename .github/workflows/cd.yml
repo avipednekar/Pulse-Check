@@ -3,6 +3,12 @@ name: CD — Build, Push & Deploy
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'README.md'
+      - 'terraform/**'
+      - 'docs/**'
+      - '.gitignore'
+  workflow_dispatch:
 
 env:
   AWS_REGION: ap-south-1
