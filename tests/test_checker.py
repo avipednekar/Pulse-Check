@@ -47,9 +47,18 @@ def test_status_uses_rolling_24_hour_uptime(app):
         now = datetime.now(timezone.utc)
         db.session.add_all(
             [
-                CheckResult(monitored_url=monitored_url, checked_at=now - timedelta(hours=1), is_up=True, status_code=200),
-                CheckResult(monitored_url=monitored_url, checked_at=now - timedelta(hours=2), is_up=False, status_code=500),
-                CheckResult(monitored_url=monitored_url, checked_at=now - timedelta(hours=25), is_up=True, status_code=200),
+                CheckResult(
+                    monitored_url=monitored_url, checked_at=now - timedelta(hours=1),
+                    is_up=True, status_code=200,
+                ),
+                CheckResult(
+                    monitored_url=monitored_url, checked_at=now - timedelta(hours=2),
+                    is_up=False, status_code=500,
+                ),
+                CheckResult(
+                    monitored_url=monitored_url, checked_at=now - timedelta(hours=25),
+                    is_up=True, status_code=200,
+                ),
             ]
         )
         db.session.commit()
