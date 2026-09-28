@@ -31,6 +31,8 @@ jobs:
         run: flake8 app/ tests/ --max-line-length=120 --exclude=__pycache__
 
       - name: Run pytest
+        env:
+          PYTHONPATH: .
         run: pytest tests/ -v --tb=short
 
   # Build and push Docker image to ECR
