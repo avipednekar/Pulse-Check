@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
+from typing import Any
+
 from .extensions import db
 
 
@@ -11,7 +13,16 @@ def utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
 
-class MonitoredUrl(db.Model):
+class BaseModel(db.Model):
+    __abstract__ = True
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__()
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+
+class MonitoredUrl(BaseModel):
     __tablename__ = "monitored_urls"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -24,8 +35,13 @@ class MonitoredUrl(db.Model):
         lazy="dynamic",
     )
 
+    def __init__(self, url: str | None = None, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        if url is not None:
+            self.url = url
 
-class CheckResult(db.Model):
+
+class CheckResult(BaseModel):
     __tablename__ = "check_results"
     __table_args__ = (
         db.Index("ix_check_results_url_checked_at", "monitored_url_id", "checked_at"),
