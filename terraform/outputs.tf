@@ -16,3 +16,13 @@ output "rds_endpoint" {
 output "rds_database_name" {
   value = aws_db_instance.pulsecheck.db_name
 }
+
+output "sns_topic_arn" {
+  description = "ARN of the SNS topic for CloudWatch alarms"
+  value       = aws_sns_topic.alerts.arn
+}
+
+output "cloudwatch_cpu_alarm_name" {
+  description = "Name of the EC2 High CPU CloudWatch alarm"
+  value       = aws_cloudwatch_metric_alarm.ec2_cpu_high.alarm_name
+}

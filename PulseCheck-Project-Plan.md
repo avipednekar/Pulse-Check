@@ -66,22 +66,22 @@ Developer push --> GitHub Actions (test, build, push image) --> Amazon ECR
     Dockerfile
     docker-compose.yml
   ```
-- [ ] Build the checker logic: given a list of URLs, ping each with `requests`,
+- [x] Build the checker logic: given a list of URLs, ping each with `requests`,
       record status code + response time
-- [ ] Use `threading` or `APScheduler` to run checks on a schedule (e.g. every 5 min)
-- [ ] Store results in SQLite locally (swap for Postgres later)
-- [ ] Basic Flask routes: `/` (dashboard), `/api/status` (JSON), `/add-url`
+- [x] Use `threading` or `APScheduler` to run checks on a schedule (e.g. every 5 min)
+- [x] Store results in SQLite locally (swap for Postgres later)
+- [x] Basic Flask routes: `/` (dashboard), `/api/status` (JSON), `/add-url`
 
 ### Day 3: Dashboard
-- [ ] Jinja2 template showing each monitored URL: current status, last response
+- [x] Jinja2 template showing each monitored URL: current status, last response
       time, uptime % over last 24h
-- [ ] Simple styling (Bootstrap CDN is fine — don't over-invest here)
+- [x] Simple styling (Bootstrap CDN is fine — don't over-invest here)
 
 ### Day 4: Dockerize
-- [ ] Write a `Dockerfile` (multi-stage if you want extra points: builder +
+- [x] Write a `Dockerfile` (multi-stage if you want extra points: builder +
       slim runtime image)
-- [ ] Write `docker-compose.yml` for local dev (app + Postgres)
-- [ ] Verify: `docker compose up` works end-to-end locally
+- [x] Write `docker-compose.yml` for local dev (app + Postgres)
+- [x] Verify: `docker compose up` works end-to-end locally
 
 **Checkpoint:** App runs locally in Docker, dashboard shows live status of 3-5 URLs.
 
@@ -90,35 +90,35 @@ Developer push --> GitHub Actions (test, build, push image) --> Amazon ECR
 ## Phase 2 — Cloud Infrastructure (Days 5-9)
 
 ### Day 5: AWS account + IAM
-- [ ] Create AWS account, enable free tier alerts/budget (set a $5 budget alarm)
-- [ ] Create an IAM user for Terraform (NOT root) with least-privilege policy
+- [x] Create AWS account, enable free tier alerts/budget (set a $5 budget alarm)
+- [x] Create an IAM user for Terraform (NOT root) with least-privilege policy
       (EC2, RDS, ECR, CloudWatch access only)
-- [ ] Install AWS CLI, configure with `aws configure`
-- [ ] Install Terraform locally
+- [x] Install AWS CLI, configure with `aws configure`
+- [x] Install Terraform locally
 
 ### Day 6-7: Terraform — networking + compute
-- [ ] `main.tf` — provider block, backend config (local state is fine to start)
-- [ ] `vpc.tf` — VPC, public subnet, internet gateway, route table
-- [ ] `security_groups.tf` — allow inbound 22 (SSH, your IP only), 80/5000
+- [x] `main.tf` — provider block, backend config (local state is fine to start)
+- [x] `vpc.tf` — VPC, public subnet, internet gateway, route table
+- [x] `security_groups.tf` — allow inbound 22 (SSH, your IP only), 80/5000
       (app), outbound all
-- [ ] `ec2.tf` — EC2 instance (t2.micro / t3.micro, free tier), key pair,
+- [x] `ec2.tf` — EC2 instance (t2.micro / t3.micro, free tier), key pair,
       user-data script to install Docker on boot
-- [ ] `terraform init && terraform plan` — review before applying
+- [x] `terraform init && terraform plan` — review before applying
 
 ### Day 8: Terraform — database
-- [ ] `rds.tf` — PostgreSQL instance (db.t3.micro, free tier), in a private
+- [x] `rds.tf` — PostgreSQL instance (db.t3.micro, free tier), in a private
       subnet if you want to go further, otherwise public with a strict SG
-- [ ] Store DB credentials in AWS Secrets Manager or at minimum as Terraform
+- [x] Store DB credentials in AWS Secrets Manager or at minimum as Terraform
       variables (never hardcode — mention this in interviews as a security
       awareness point)
-- [ ] Update Flask app config to read DB connection string from environment
+- [x] Update Flask app config to read DB connection string from environment
       variable
 
 ### Day 9: Apply + verify
-- [ ] `terraform apply`
-- [ ] SSH into EC2, manually pull and run the Docker image once to confirm
+- [x] `terraform apply`
+- [x] SSH into EC2, manually pull and run the Docker image once to confirm
       everything connects (app <-> RDS)
-- [ ] Confirm dashboard is reachable via EC2 public IP
+- [x] Confirm dashboard is reachable via EC2 public IP
 
 **Checkpoint:** Infrastructure is live on AWS, provisioned entirely through
 Terraform, app manually deployed and working.
@@ -128,26 +128,26 @@ Terraform, app manually deployed and working.
 ## Phase 3 — CI/CD Pipeline (Days 10-14)
 
 ### Day 10: Repo structure + GitHub setup
-- [ ] Push code to GitHub (structure: `app/`, `terraform/`, `.github/workflows/`)
-- [ ] Add `.gitignore` (exclude `.tfstate`, `.env`, `__pycache__`)
-- [ ] Write a clear README skeleton (fill in fully at the end)
+- [x] Push code to GitHub (structure: `app/`, `terraform/`, `.github/workflows/`)
+- [x] Add `.gitignore` (exclude `.tfstate`, `.env`, `__pycache__`)
+- [x] Write a clear README skeleton (fill in fully at the end)
 
 ### Day 11-12: CI (Continuous Integration)
-- [ ] `.github/workflows/ci.yml`:
+- [x] `.github/workflows/ci.yml`:
   - Trigger on push/PR to `main`
   - Install dependencies
   - Run `pytest`
   - Run `flake8` or `black --check` for linting
-- [ ] Make sure CI fails loudly on a broken test (test this deliberately once)
+- [x] Make sure CI fails loudly on a broken test (test this deliberately once)
 
 ### Day 13-14: CD (Continuous Deployment)
-- [ ] Create an ECR repository (via Terraform, `ecr.tf`)
-- [ ] Extend the workflow: on merge to `main`, build Docker image, tag with
+- [x] Create an ECR repository (via Terraform, `ecr.tf`)
+- [x] Extend the workflow: on merge to `main`, build Docker image, tag with
       commit SHA, push to ECR
-- [ ] Deploy step: SSH into EC2 (using a GitHub Actions SSH action) to pull
+- [x] Deploy step: SSH into EC2 (using a GitHub Actions SSH action) to pull
       the new image and restart the container — OR use an EC2 user-data /
       systemd approach that polls ECR
-- [ ] Add CloudWatch alarm: EC2 CPU > 80%, and/or a custom metric for "URL
+- [x] Add CloudWatch alarm: EC2 CPU > 80%, and/or a custom metric for "URL
       down" events from your app
 
 **Checkpoint:** A `git push` to main automatically tests, builds, and

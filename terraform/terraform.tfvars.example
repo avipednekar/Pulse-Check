@@ -4,3 +4,6 @@ my_ip = "YOUR.PUBLIC.IP.ADDRESS/32"
 
 db_username = "postgresadmin"
 db_password = "Your_DB_PASSWORD"
+
+# Optional: Email address to receive CloudWatch alarm notifications
+# alert_email = "your-email@example.com"
