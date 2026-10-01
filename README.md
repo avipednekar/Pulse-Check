@@ -212,7 +212,7 @@ All AWS infrastructure is managed as code using Terraform under `terraform/`.
    ```hcl
    aws_region   = "ap-south-1"
    project_name = "PulseCheck"
-   my_ip        = "YOUR_PUBLIC_IP/32"   # Scopes SSH and web port to your IP
+   # my_ip is auto-detected via checkip.amazonaws.com — no manual config needed!
    db_username  = "postgresadmin"
    db_password  = "YourSecurePassword123"
    alert_email  = "your-email@example.com" # Optional: For CloudWatch SNS alerts

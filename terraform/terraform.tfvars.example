@@ -1,6 +1,6 @@
 aws_region   = "ap-south-1"
 project_name = "PulseCheck"
-my_ip = "YOUR.PUBLIC.IP.ADDRESS/32"
+# my_ip is auto-detected at plan/apply time via checkip.amazonaws.com
 
 db_username = "postgresadmin"
 db_password = "Your_DB_PASSWORD"

@@ -1,7 +1,10 @@
-# My IP address variable
-variable "my_ip" {
-  description = "Your public IP address in CIDR notation"
-  type        = string
+# Auto-detect current public IP — no manual updates needed
+data "http" "my_ip" {
+  url = "https://checkip.amazonaws.com"
+}
+
+locals {
+  my_ip_cidr = "${chomp(data.http.my_ip.response_body)}/32"
 }
 
 # Application Security Group (EC2)
@@ -16,7 +19,7 @@ resource "aws_security_group" "pulsecheck_app_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.my_ip]
+    cidr_blocks = [local.my_ip_cidr]
   }
 
   # Flask/FastAPI/App Port
@@ -25,7 +28,7 @@ resource "aws_security_group" "pulsecheck_app_sg" {
     from_port   = 5000
     to_port     = 5000
     protocol    = "tcp"
-    cidr_blocks = [var.my_ip]
+    cidr_blocks = [local.my_ip_cidr]
   }
 
   # Allow all outbound traffic
