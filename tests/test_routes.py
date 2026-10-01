@@ -7,7 +7,7 @@ from app.models import CheckResult, MonitoredUrl
 def test_dashboard_renders_empty_state(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert b"Add a URL to begin monitoring" in response.data
+    assert b"Add a URL above to begin monitoring" in response.data
 
 
 def test_add_url_normalizes_and_redirects(client, app):

@@ -23,7 +23,7 @@ def test_url_history_shows_all_recorded_checks(client, app):
 
     response = client.get(f"/urls/{url_id}")
     assert response.status_code == 200
-    assert b"Check history" in response.data
+    assert b"Check History" in response.data
     assert b"HTTP 200" in response.data
     assert b"Connection timed out" in response.data
     assert f"/urls/{url_id}".encode() in client.get("/").data
