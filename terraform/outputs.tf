@@ -1,6 +1,6 @@
 output "ec2_public_ip" {
-  description = "Public IP address of the PulseCheck EC2 instance."
-  value       = aws_instance.pulsecheck_app.public_ip
+  description = "Elastic IP address of the PulseCheck EC2 instance."
+  value       = aws_eip.pulsecheck_eip.public_ip
 }
 
 output "ec2_public_dns" {

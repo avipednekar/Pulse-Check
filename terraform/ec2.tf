@@ -84,3 +84,13 @@ resource "aws_instance" "pulsecheck_app" {
     Name = "pulsecheck-app"
   }
 }
+
+# Elastic IP — permanent static IP that survives instance replacement
+resource "aws_eip" "pulsecheck_eip" {
+  instance = aws_instance.pulsecheck_app.id
+  domain   = "vpc"
+
+  tags = {
+    Name = "pulsecheck-eip"
+  }
+}

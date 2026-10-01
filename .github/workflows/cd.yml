@@ -13,7 +13,7 @@ on:
 env:
   AWS_REGION: ap-south-1
   ECR_REPOSITORY: pulsecheck
-  EC2_HOST: 13.232.199.241
+  EC2_HOST: 3.110.247.17
 
 jobs:
   # Run CI checks first
