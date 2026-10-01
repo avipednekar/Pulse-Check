@@ -158,21 +158,17 @@ redeploys the app to AWS with no manual steps.
 ## Phase 4 — Polish (Days 15-18)
 
 ### Day 15: Tests
-- [ ] Unit tests for the checker logic (mock `requests` responses — up, down,
-      timeout cases)
-- [ ] At least one integration test for a Flask route
+- [x] Unit tests for the checker logic (mock `requests` responses — up, down, timeout cases)
+- [x] At least one integration test for a Flask route
 
 ### Day 16-17: Documentation
-- [ ] Full README: problem statement, architecture diagram, tech stack, how
-      to run locally, how to deploy, screenshots of the dashboard
-- [ ] Include the architecture diagram (recreate the one from this plan, or
-      draw it in draw.io / Excalidraw)
-- [ ] Document any trade-offs you made and why (this is gold for interviews)
+- [x] Full README: problem statement, architecture diagram, tech stack, how to run locally, how to deploy, screenshots of the dashboard
+- [x] Include the architecture diagram (recreate the one from this plan, or draw it in draw.io / Excalidraw)
+- [x] Document any trade-offs you made and why (this is gold for interviews)
 
 ### Day 18: Cost cleanup
-- [ ] `terraform destroy` when not actively demoing, to stay within free tier
-- [ ] Note the exact `terraform apply` / `destroy` commands in README so you
-      can spin it back up before an interview demo
+- [x] `terraform destroy` when not actively demoing, to stay within free tier
+- [x] Note the exact `terraform apply` / `destroy` commands in README so you can spin it back up before an interview demo
 
 ---
 

@@ -295,6 +295,25 @@ PulseCheck provisions proactive monitoring directly through Terraform:
 
 ---
 
+## ⚖️ Architecture Trade-offs
+
+To optimize for delivery speed, simplicity, and zero-cost constraints (AWS Free Tier), the following design trade-offs were deliberately made:
+
+1. **Single EC2 Instance vs. Auto Scaling Group & Load Balancer:**
+   - *Decision:* Deployed the application on a single `t3.micro` EC2 instance with an Elastic IP.
+   - *Trade-off:* Sacrifices multi-AZ high availability and horizontal scalability in favor of cost-efficiency and reduced infrastructure complexity.
+2. **In-Process Scheduler vs. Dedicated Worker Queue (Celery + Redis):**
+   - *Decision:* Used `APScheduler` running in a background thread within the Flask application.
+   - *Trade-off:* Avoids the need to provision and manage a Redis broker and dedicated worker instances, keeping the deployment monolithic and simple. However, it tightly couples task execution with web serving and doesn't scale horizontally out of the box.
+3. **RDS vs. Containerized Database:**
+   - *Decision:* Provisioned a managed AWS RDS PostgreSQL instance rather than running Postgres inside a Docker container on the EC2 instance.
+   - *Trade-off:* Adds slight IaC complexity (VPC subnets, security groups) but provides automated backups, maintenance windows, and decouples stateful storage from ephemeral compute, ensuring no data loss if the EC2 instance is terminated.
+4. **Ephemeral GitHub Actions IP vs. VPN/Bastion Host:**
+   - *Decision:* The CD pipeline dynamically whitelists the GitHub runner's IP in the EC2 security group for SSH deployment, then revokes it.
+   - *Trade-off:* Avoids the cost and overhead of maintaining a Bastion Host or AWS Systems Manager (SSM) setup, though it momentarily opens port 22 to a public GitHub IP.
+
+---
+
 ## 🧹 Infrastructure Teardown
 
 To avoid unnecessary cloud costs and preserve AWS Free Tier limits when not demonstrating the project:
