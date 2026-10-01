@@ -3,74 +3,140 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PulseCheck</title>
+    <title>PulseCheck Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
-  <body class="bg-light">
+  <body>
     <main class="container py-5">
-      <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-          <h1 class="h2 mb-1">PulseCheck</h1>
-          <p class="text-secondary mb-0">A local HTTP uptime monitor. Checks run every five minutes.</p>
+          <h1 class="h2 mb-1 dashboard-header">PulseCheck</h1>
+          <p class="text-secondary mb-0">Premium HTTP uptime monitor</p>
         </div>
       </div>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% for category, message in messages %}
-          <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+          <div class="alert alert-{{ category }} glass-card text-white mb-4 border-0" role="alert">{{ message }}</div>
         {% endfor %}
       {% endwith %}
 
-      <section class="card shadow-sm mb-4">
-        <div class="card-body">
-          <form method="post" action="{{ url_for('main.add_url') }}" class="row g-2">
-            <div class="col-md">
-              <label class="visually-hidden" for="url">Website URL</label>
-              <input class="form-control" id="url" name="url" type="url" placeholder="https://example.com" required>
+      <div class="row mb-4">
+        <div class="col-lg-8 mb-4 mb-lg-0">
+          <section class="glass-card h-100 p-4">
+            <h5 class="mb-3">Uptime Overview (24h)</h5>
+            <div class="chart-container">
+              <canvas id="uptimeChart"></canvas>
             </div>
-            <div class="col-md-auto"><button class="btn btn-primary w-100" type="submit">Add URL</button></div>
-          </form>
+          </section>
         </div>
-      </section>
+        <div class="col-lg-4">
+          <section class="glass-card h-100 p-4 d-flex flex-column justify-content-center">
+            <h5 class="mb-3">Add New Monitor</h5>
+            <form method="post" action="{{ url_for('main.add_url') }}">
+              <div class="mb-3">
+                <label class="visually-hidden" for="url">Website URL</label>
+                <input class="form-control" id="url" name="url" type="url" placeholder="https://example.com" required>
+              </div>
+              <button class="btn btn-primary w-100 py-2" type="submit">Start Monitoring</button>
+            </form>
+          </section>
+        </div>
+      </div>
 
-      <section class="card shadow-sm">
+      <section class="glass-card overflow-hidden">
         <div class="table-responsive">
           <table class="table table-hover align-middle mb-0">
-            <thead class="table-light"><tr><th>URL</th><th>Status</th><th>Latest result</th><th>Response time</th><th>Last checked</th><th>24h uptime</th><th></th></tr></thead>
+            <thead class="table-light"><tr><th class="ps-4">URL</th><th>Status</th><th>Latest result</th><th>Response time</th><th>Last checked</th><th>24h uptime</th><th class="pe-4 text-end">Action</th></tr></thead>
             <tbody>
               {% for item in statuses %}
               <tr>
-                <td class="text-break">
-                  <a href="{{ url_for('main.url_history', url_id=item.id) }}">{{ item.url }}</a>
-                  <a class="small text-secondary ms-1" href="{{ item.url }}" target="_blank" rel="noopener noreferrer" aria-label="Open {{ item.url }}">&nearr;</a>
+                <td class="ps-4 text-break">
+                  <a href="{{ url_for('main.url_history', url_id=item.id) }}" class="fw-semibold">{{ item.url }}</a>
+                  <a class="small text-secondary ms-2" href="{{ item.url }}" target="_blank" rel="noopener noreferrer" aria-label="Open {{ item.url }}"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V14a.5.5 0 0 0-1 0v1.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg></a>
                 </td>
                 <td><span class="badge text-bg-{{ 'success' if item.state == 'up' else 'danger' if item.state == 'down' else 'secondary' }}">{{ item.state|upper }}</span></td>
                 <td>{% if item.status_code %}HTTP {{ item.status_code }}{% elif item.error_message %}{{ item.error_message }}{% else %}No checks yet{% endif %}</td>
                 <td>{{ item.response_time_ms ~ ' ms' if item.response_time_ms is not none else '—' }}</td>
-                <td>{{ item.last_checked_at or '—' }}</td>
-                <td>{{ item.uptime_percent ~ '%' if item.uptime_percent is not none else '—' }}</td>
-                <td><button class="btn btn-sm btn-outline-primary check-now" data-url-id="{{ item.id }}" type="button">Check now</button></td>
+                <td><span class="small text-secondary">{{ item.last_checked_at or '—' }}</span></td>
+                <td class="fw-medium text-{{ 'success' if item.uptime_percent == 100 else 'warning' if item.uptime_percent != None else 'secondary' }}">{{ item.uptime_percent ~ '%' if item.uptime_percent != None else '—' }}</td>
+                <td class="pe-4 text-end"><button class="btn btn-sm btn-outline-primary check-now px-3" data-url-id="{{ item.id }}" type="button">Ping</button></td>
               </tr>
               {% else %}
-              <tr><td colspan="7" class="text-center text-secondary py-4">Add a URL to begin monitoring.</td></tr>
+              <tr><td colspan="7" class="text-center text-secondary py-5">Add a URL above to begin monitoring.</td></tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
       </section>
     </main>
+
     <script>
+      // Initialize Chart.js
+      const statuses = {{ statuses|tojson|safe }};
+      const validStatuses = statuses.filter(s => s.uptime_percent !== null);
+      
+      if (validStatuses.length > 0) {
+        const ctx = document.getElementById('uptimeChart').getContext('2d');
+        
+        // Gradient for bars
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.8)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0.2)');
+
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: validStatuses.map(s => {
+              try { return new URL(s.url).hostname; } catch(e) { return s.url; }
+            }),
+            datasets: [{
+              label: '24h Uptime (%)',
+              data: validStatuses.map(s => s.uptime_percent),
+              backgroundColor: gradient,
+              borderColor: 'rgba(99, 102, 241, 1)',
+              borderWidth: 1,
+              borderRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { 
+                beginAtZero: true, 
+                max: 100,
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { color: '#94a3b8' }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: '#94a3b8' }
+              }
+            },
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+      } else {
+        document.getElementById('uptimeChart').outerHTML = '<div class="d-flex h-100 align-items-center justify-content-center text-secondary">No data available yet</div>';
+      }
+
+      // Check now logic
       document.querySelectorAll('.check-now').forEach((button) => {
         button.addEventListener('click', async () => {
           button.disabled = true;
-          button.textContent = 'Checking…';
+          button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
           try {
             const response = await fetch(`/api/check/${button.dataset.urlId}`, {method: 'POST'});
             if (!response.ok) throw new Error('Check failed');
             window.location.reload();
           } catch (error) {
             button.disabled = false;
-            button.textContent = 'Try again';
+            button.textContent = 'Ping';
           }
         });
       });
