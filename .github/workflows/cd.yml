@@ -102,6 +102,8 @@ jobs:
             --cidr "$RUNNER_IP/32" \
             --tag-specifications 'ResourceType=security-group-rule,Tags=[{Key=Name,Value=github-actions-temp}]'
           echo "Opened SSH for runner IP: $RUNNER_IP"
+          echo "Waiting 10s for security group rule to propagate..."
+          sleep 10
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
@@ -109,6 +111,7 @@ jobs:
           host: ${{ env.EC2_HOST }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          timeout: 60s
           script: |
             # Login to ECR
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com

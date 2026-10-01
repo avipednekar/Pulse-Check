@@ -74,6 +74,12 @@ resource "aws_instance" "pulsecheck_app" {
               usermod -aG docker ec2-user
               EOF
 
+  # Prevent Terraform from destroying and recreating the instance
+  # when AWS publishes a new AMI or user_data formatting changes
+  lifecycle {
+    ignore_changes = [ami, user_data]
+  }
+
   tags = {
     Name = "pulsecheck-app"
   }
