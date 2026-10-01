@@ -19,7 +19,10 @@ def add_url(url="https://example.com"):
 @pytest.mark.parametrize("status_code,is_up", [(200, True), (302, True), (404, False), (500, False)])
 def test_run_check_records_http_result(app, status_code, is_up):
     with app.app_context(), patch("app.checker.requests.get") as get:
-        get.return_value = Mock(status_code=status_code)
+        mock_response = Mock(status_code=status_code)
+        mock_response.__enter__ = Mock(return_value=mock_response)
+        mock_response.__exit__ = Mock(return_value=False)
+        get.return_value = mock_response
         monitored_url = add_url()
         result = run_check(monitored_url)
 
