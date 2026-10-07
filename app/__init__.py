@@ -24,7 +24,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         SQLALCHEMY_DATABASE_URI=os.getenv("DATABASE_URL", "sqlite:///pulsecheck.db"),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         CHECK_TIMEOUT_SECONDS=float(os.getenv("CHECK_TIMEOUT_SECONDS", "10")),
-        CHECK_INTERVAL_MINUTES=int(os.getenv("CHECK_INTERVAL_MINUTES", "5")),
+        CHECK_INTERVAL_MINUTES=int(os.getenv("CHECK_INTERVAL_MINUTES", "10")),
         ENABLE_SCHEDULER=_env_flag("ENABLE_SCHEDULER", False),
     )
     if test_config:

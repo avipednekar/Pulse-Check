@@ -28,7 +28,7 @@ resource "aws_security_group" "pulsecheck_app_sg" {
     from_port   = 5000
     to_port     = 5000
     protocol    = "tcp"
-    cidr_blocks = [local.my_ip_cidr]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Allow all outbound traffic

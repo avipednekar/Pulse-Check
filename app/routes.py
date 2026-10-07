@@ -58,6 +58,44 @@ def url_history(url_id: int):
     )
 
 
+@bp.get("/api/checks/<int:url_id>")
+def api_checks(url_id: int):
+    """Return check history as JSON, optionally filtered by date_from and date_to."""
+    from datetime import datetime, timezone
+
+    monitored_url = db.get_or_404(MonitoredUrl, url_id)
+    query = monitored_url.checks
+
+    date_from = request.args.get("date_from")
+    date_to = request.args.get("date_to")
+
+    if date_from:
+        try:
+            dt_from = datetime.fromisoformat(date_from).replace(tzinfo=timezone.utc)
+            query = query.filter(CheckResult.checked_at >= dt_from)
+        except ValueError:
+            pass
+
+    if date_to:
+        try:
+            dt_to = datetime.fromisoformat(date_to).replace(hour=23, minute=59, second=59, tzinfo=timezone.utc)
+            query = query.filter(CheckResult.checked_at <= dt_to)
+        except ValueError:
+            pass
+
+    checks = query.order_by(CheckResult.checked_at.desc()).all()
+    return jsonify([
+        {
+            "checked_at": check.checked_at.isoformat(),
+            "is_up": check.is_up,
+            "status_code": check.status_code,
+            "response_time_ms": check.response_time_ms,
+            "error_message": check.error_message,
+        }
+        for check in checks
+    ])
+
+
 @bp.post("/add-url")
 def add_url():
     try:
@@ -74,7 +112,7 @@ def add_url():
         db.session.rollback()
         flash("That URL is already being monitored.", "warning")
     else:
-        flash("URL added. Its first scheduled check will run within five minutes.", "success")
+        flash("URL added. Its first scheduled check will run within ten minutes.", "success")
     return redirect(url_for("main.dashboard"))
 
 
