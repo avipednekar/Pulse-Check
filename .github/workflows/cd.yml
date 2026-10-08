@@ -131,7 +131,7 @@ jobs:
               -e DATABASE_URL='${{ secrets.DATABASE_URL }}' \
               -e SECRET_KEY='${{ secrets.SECRET_KEY }}' \
               -e ENABLE_SCHEDULER=true \
-              -e CHECK_INTERVAL_MINUTES=5 \
+              -e CHECK_INTERVAL_MINUTES=10 \
               ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:latest
 
             # Verify container is running

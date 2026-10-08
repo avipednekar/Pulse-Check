@@ -19,7 +19,7 @@ resource "aws_security_group" "pulsecheck_app_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [local.my_ip_cidr]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Flask/FastAPI/App Port
